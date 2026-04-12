@@ -1,0 +1,11 @@
+name = "hand-me-downs-api"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+# KV namespace for caching department lists and other slow-changing data.
+# To create:  npx wrangler kv namespace create CACHE
+# Then paste the returned id below.
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "<your-namespace-id>"
