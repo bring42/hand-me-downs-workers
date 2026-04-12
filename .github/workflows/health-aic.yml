@@ -1,0 +1,13 @@
+name: AIC
+on:
+  schedule: [{ cron: "0 */6 * * *" }]
+  workflow_dispatch:
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" "https://hand-me-downs-api.tubas-housing-1c.workers.dev/api/aic/departments")
+          echo "HTTP $status" && [ "$status" = "200" ]

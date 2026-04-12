@@ -2,11 +2,11 @@
 
 [![Typecheck](https://github.com/bring42/hand-me-downs-workers/actions/workflows/ci.yml/badge.svg?job=typecheck)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/ci.yml)
 [![Test](https://github.com/bring42/hand-me-downs-workers/actions/workflows/ci.yml/badge.svg?job=test)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/ci.yml)
-[![MET](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml/badge.svg?job=met)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml)
-[![AIC](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml/badge.svg?job=aic)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml)
-[![Rijks](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml/badge.svg?job=rijks)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml)
-[![CMA](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml/badge.svg?job=cma)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml)
-[![MIA](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml/badge.svg?job=mia)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/api-health.yml)
+[![MET](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-met.yml/badge.svg)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-met.yml)
+[![AIC](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-aic.yml/badge.svg)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-aic.yml)
+[![Rijks](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-rijks.yml/badge.svg)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-rijks.yml)
+[![CMA](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-cma.yml/badge.svg)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-cma.yml)
+[![MIA](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-mia.yml/badge.svg)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-mia.yml)
 
 > Want some real culture, kid? A Cloudflare Workers API serving CC0 art sources from the greatest institutions on the marble — the ones that let us common folk access it.
 
