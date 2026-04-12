@@ -1,5 +1,7 @@
 # hand-me-downs (Workers)
 
+[![CI](https://github.com/bring42/hand-me-downs-workers/actions/workflows/ci.yml/badge.svg)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/ci.yml)
+
 > Want some real culture, kid? A Cloudflare Workers API serving CC0 art sources from the greatest institutions on the marble — the ones that let us common folk access it.
 
 A port of [hand-me-downs](https://github.com/bring42/hand-me-downs) (Python CLI) to a Cloudflare Workers HTTP API, built with [Hono](https://hono.dev). Part of the [nice-inheritance](https://github.com/bring42/nice-inheritance) ecosystem — an open-source art frame aggregator.
