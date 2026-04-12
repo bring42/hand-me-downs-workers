@@ -108,15 +108,77 @@ export const sources: Record<string, SourceModule> = {
 };
 ```
 
+## Tests
+
+Create `test/<slug>.test.ts` with unit tests for the `adapt()` function:
+
+```typescript
+import { describe, it, expect } from "vitest";
+import { _adapt } from "../src/sources/<slug>";
+
+describe("<slug> adapt", () => {
+  const baseObj = { /* valid CC0 object with images */ };
+
+  it("returns a valid UnifiedRecord for CC0 object", () => {
+    const rec = _adapt(baseObj);
+    expect(rec).not.toBeNull();
+    expect(rec!.uid).toBe("<SLUG>-<id>");
+    expect(rec!.source).toBe("<slug>");
+    expect(rec!.rights).toBe("CC0");
+  });
+
+  it("returns null for non-CC0 objects", () => { /* ... */ });
+  it("returns null when images are missing", () => { /* ... */ });
+});
+```
+
+To make `adapt` testable, export it from the source module:
+
+```typescript
+// Exported for testing
+export { adapt as _adapt };
+```
+
+## Health-check workflow
+
+Create `.github/workflows/health-<slug>.yml`:
+
+```yaml
+name: <NAME>
+on:
+  schedule: [{ cron: "0 */6 * * *" }]
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" "https://hand-me-downs-api.tubas-housing-1c.workers.dev/api/<slug>/departments")
+          echo "HTTP $status" && [ "$status" = "200" ]
+```
+
+## README badge
+
+Add a badge to `README.md` alongside the existing health-check badges:
+
+```markdown
+[![<NAME>](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-<slug>.yml/badge.svg?branch=main)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-<slug>.yml)
+```
+
 ## Checklist
 
 - [ ] Source module created at `src/sources/<slug>.ts`
 - [ ] Exports all four `SourceModule` functions: `search`, `departments`, `departmentRecords`, `idRecords`
+- [ ] `adapt()` exported as `_adapt` for testing
 - [ ] `adapt()` filters on CC0/public-domain status
 - [ ] `adapt()` filters on image availability (returns null if no images)
 - [ ] `RateLimiter` instantiated with safe rate for the API
 - [ ] Source registered in `src/sources/index.ts`
+- [ ] Unit tests in `test/<slug>.test.ts`
+- [ ] Health-check workflow at `.github/workflows/health-<slug>.yml`
+- [ ] Badge added to `README.md`
 - [ ] `npm run typecheck` passes
+- [ ] `npm test` passes
 - [ ] Smoke-tested via `npm run dev`:
   - `GET /api/<slug>/departments` returns a list
   - `GET /api/<slug>/search?q=test&limit=3` returns records

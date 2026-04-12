@@ -32,8 +32,16 @@ When asked to "add X" (a museum or collection), always:
    - `departments(): Promise<Department[]>`
    - `departmentRecords(name: string, limit: number): Promise<UnifiedRecord[]>`
    - `idRecords(ids: string[]): Promise<UnifiedRecord[]>`
-4. Register the new slug in `src/sources/index.ts` — import the module and add it to the `sources` record
-5. Smoke-test via `npm run dev` and hit `/api/<slug>/departments` and `/api/<slug>/search?q=test`
+4. Export the `adapt` function as `_adapt` (and any notable helpers) for testing
+5. Register the new slug in `src/sources/index.ts` — import the module and add it to the `sources` record
+6. Add unit tests in `test/<slug>.test.ts` — test `_adapt()` with valid CC0 data, non-CC0 rejection, missing images, edge cases
+7. Create a health-check workflow at `.github/workflows/health-<slug>.yml` (copy an existing one, change the name and URL path)
+8. Add a badge to `README.md` for the new health-check workflow:
+   ```
+   [![<NAME>](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-<slug>.yml/badge.svg?branch=main)](https://github.com/bring42/hand-me-downs-workers/actions/workflows/health-<slug>.yml)
+   ```
+9. Run `npm run typecheck` and `npm test` — both must pass
+10. Smoke-test via `npm run dev` and hit `/api/<slug>/departments` and `/api/<slug>/search?q=test`
 
 See `.github/instructions/new-source.instructions.md` for the full template.
 
