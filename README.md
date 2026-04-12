@@ -10,7 +10,7 @@
 
 > Want some real culture, kid? A Cloudflare Workers API serving CC0 art sources from the greatest institutions on the marble — the ones that let us common folk access it.
 
-A port of [hand-me-downs](https://github.com/bring42/hand-me-downs) (Python CLI) to a Cloudflare Workers HTTP API, built with [Hono](https://hono.dev). Part of the [nice-inheritance](https://github.com/bring42/nice-inheritance) ecosystem — an open-source art frame aggregator.
+A port of [hand-me-downs](https://github.com/bring42/hand-me-downs) (Python CLI) to a Cloudflare Workers HTTP API, built with [Hono](https://hono.dev). The API collects metadata and image URLs for public-domain artworks from multiple museum APIs, normalizes them to a common schema, and serves them via REST endpoints.
 
 No images are downloaded. Only structured JSON records with metadata and image source URLs.
 
