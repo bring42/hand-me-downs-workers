@@ -17,6 +17,12 @@ function parseLimit(raw: string | undefined): number {
   return Math.min(n, MAX_LIMIT);
 }
 
+function parseOffset(raw: string | undefined): number {
+  const n = parseInt(raw || "", 10);
+  if (isNaN(n) || n < 0) return 0;
+  return n;
+}
+
 function getSource(name: string) {
   const mod = sources[name];
   if (!mod) return null;
@@ -48,11 +54,11 @@ app.get("/", (c) =>
     description: "CC0 public-domain artwork metadata API",
     sources: sourceNames,
     endpoints: [
-      "GET /api/:source/search?q=<query>&limit=<n>",
+      "GET /api/:source/search?q=<query>&limit=<n>&offset=<n>",
       "GET /api/:source/departments",
-      "GET /api/:source/department/:name?limit=<n>",
+      "GET /api/:source/department/:name?limit=<n>&offset=<n>",
       "GET /api/:source/ids?ids=<comma-separated>",
-      "GET /api/all/search?q=<query>&limit=<n>",
+      "GET /api/all/search?q=<query>&limit=<n>&offset=<n>",
     ],
   })
 );
@@ -63,11 +69,13 @@ app.get("/api/all/search", async (c) => {
   const query = c.req.query("q");
   if (!query) return c.json({ error: "Missing ?q= parameter" }, 400);
   const limit = parseLimit(c.req.query("limit"));
+  const offset = parseOffset(c.req.query("offset"));
 
+  const fetchLimit = offset + limit;
   const results = await Promise.all(
     sourceNames.map(async (name) => {
       try {
-        const records = await sources[name].search(query, limit);
+        const records = await sources[name].search(query, fetchLimit);
         return { source: name, total: records.length, records };
       } catch (err) {
         console.error(`[${name}] search error:`, err);
@@ -76,9 +84,18 @@ app.get("/api/all/search", async (c) => {
     })
   );
 
-  const allRecords = results.flatMap((r) => r.records);
+  // Combine and dedup by uid
+  const seen = new Set<string>();
+  const allRecords = results.flatMap((r) => r.records).filter((r) => {
+    if (seen.has(r.uid)) return false;
+    seen.add(r.uid);
+    return true;
+  });
+
+  const records = allRecords.slice(offset, offset + limit);
   return c.json({
     query,
+    offset,
     limit,
     total: allRecords.length,
     by_source: results.map(({ source, total, ...rest }) => ({
@@ -86,7 +103,7 @@ app.get("/api/all/search", async (c) => {
       total,
       ...("error" in rest ? { error: rest.error } : {}),
     })),
-    records: allRecords,
+    records,
   });
 });
 
@@ -99,9 +116,11 @@ app.get("/api/:source/search", async (c) => {
   const query = c.req.query("q");
   if (!query) return c.json({ error: "Missing ?q= parameter" }, 400);
   const limit = parseLimit(c.req.query("limit"));
+  const offset = parseOffset(c.req.query("offset"));
 
-  const records = await src.search(query, limit);
-  return c.json({ source: c.req.param("source"), query, total: records.length, records });
+  const allRecords = await src.search(query, offset + limit);
+  const records = allRecords.slice(offset, offset + limit);
+  return c.json({ source: c.req.param("source"), query, offset, total: allRecords.length, records });
 });
 
 app.get("/api/:source/departments", async (c) => {
@@ -118,9 +137,11 @@ app.get("/api/:source/department/:name", async (c) => {
 
   const name = decodeURIComponent(c.req.param("name"));
   const limit = parseLimit(c.req.query("limit"));
+  const offset = parseOffset(c.req.query("offset"));
 
-  const records = await src.departmentRecords(name, limit);
-  return c.json({ source: c.req.param("source"), department: name, total: records.length, records });
+  const allRecords = await src.departmentRecords(name, offset + limit);
+  const records = allRecords.slice(offset, offset + limit);
+  return c.json({ source: c.req.param("source"), department: name, offset, total: allRecords.length, records });
 });
 
 app.get("/api/:source/ids", async (c) => {
