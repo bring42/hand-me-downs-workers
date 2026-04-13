@@ -80,6 +80,19 @@ function adapt(obj: MetObject): UnifiedRecord | null {
 // Exported for testing
 export { adapt as _adapt };
 
+function matchesQuery(rec: UnifiedRecord, query: string): boolean {
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const haystack = [
+    rec.title,
+    rec.creator,
+    rec.culture,
+    rec.department,
+    rec.classification,
+    rec.description,
+  ].join(" ").toLowerCase();
+  return terms.every(term => haystack.includes(term));
+}
+
 // --- Public API ---
 
 export async function search(query: string, limit: number): Promise<UnifiedRecord[]> {
@@ -87,7 +100,16 @@ export async function search(query: string, limit: number): Promise<UnifiedRecor
     params: { q: query, hasImages: true, isPublicDomain: true },
   });
   const ids = data?.objectIDs || [];
-  return fetchByIds(ids.slice(0, Math.min(ids.length, limit * 5)));
+  // Shuffle a window of candidates so the same top-ranked objects
+  // don't dominate every response. We shuffle the first 500 IDs
+  // (keeping results broadly relevant) then take limit*5 from that pool.
+  const pool = ids.slice(0, Math.min(ids.length, 500));
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const records = await fetchByIds(pool.slice(0, Math.min(pool.length, limit * 5)));
+  return records.filter(rec => matchesQuery(rec, query));
 }
 
 export async function departments(): Promise<Department[]> {
