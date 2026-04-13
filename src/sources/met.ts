@@ -84,10 +84,10 @@ export { adapt as _adapt };
 
 export async function search(query: string, limit: number): Promise<UnifiedRecord[]> {
   const data = await fetchJSON<MetSearchResponse>(`${BASE}/search`, limiter, {
-    params: { q: query, hasImages: true },
+    params: { q: query, hasImages: true, isPublicDomain: true },
   });
   const ids = data?.objectIDs || [];
-  return fetchByIds(ids.slice(0, limit));
+  return fetchByIds(ids.slice(0, Math.min(ids.length, limit * 5)));
 }
 
 export async function departments(): Promise<Department[]> {
@@ -109,7 +109,7 @@ export async function departmentRecords(name: string, limit: number): Promise<Un
     params: { departmentIds: dept.id as number },
   });
   const ids = data?.objectIDs || [];
-  return fetchByIds(ids.slice(0, limit));
+  return fetchByIds(ids.slice(0, Math.min(ids.length, limit * 5)));
 }
 
 export async function idRecords(ids: string[]): Promise<UnifiedRecord[]> {
