@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Masterworks — Public Domain Art</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design tokens ── */
+    :root {
+      --bg:          #09090b;
+      --surface:     #0f0f11;
+      --surface-2:   #17171a;
+      --border:      #242428;
+      --border-dim:  #1c1c1f;
+      --text:        #ede9e1;
+      --text-dim:    #5c5750;
+      --accent:      #c4a35a;
+      --accent-bg:   rgba(196, 163, 90, 0.09);
+      --accent-ring: rgba(196, 163, 90, 0.3);
+      --f-display:   'Cormorant Garamond', Georgia, serif;
+      --f-body:      'Inter', system-ui, sans-serif;
+      --ease:        cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out:    cubic-bezier(0.0, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--f-body);
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 128px 128px;
+      mix-blend-mode: overlay;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ────────────────────────────────
+       HEADER
+    ──────────────────────────────── */
+    .header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 62px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 28px;
+      background: rgba(9, 9, 11, 0.88);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .logo {
+      font-family: var(--f-display);
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .logo-accent { color: var(--accent); }
+
+    /* Search */
+    .search-wrap {
+      flex: 1;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 36px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text);
+      font-family: var(--f-body);
+      font-size: 13px;
+      font-weight: 300;
+      padding: 0 14px 0 36px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-ring);
+      box-shadow: 0 0 0 3px rgba(196, 163, 90, 0.07);
+    }
+
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    /* Source pills */
+    .source-pills {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .pill {
+      font-family: var(--f-body);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 11px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: border-color 0.18s, color 0.18s, background 0.18s;
+      white-space: nowrap;
+    }
+
+    .pill:hover  { border-color: var(--accent); color: var(--accent); }
+    .pill.active { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      padding: 80px 28px 80px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transform: scale(1.08);
+      transition: opacity 1.6s ease, background-image 0s;
+      filter: blur(8px) brightness(0.28) saturate(1.4);
+      will-change: transform, opacity;
+    }
+    .hero-bg.fade-out { opacity: 0; }
+    .hero-bg.fade-in  { opacity: 1; }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+    }
+    .hero-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 22px;
+      opacity: 0.85;
+    }
+    .hero-title {
+      font-family: var(--f-display);
+      font-size: clamp(54px, 8vw, 96px);
+      font-weight: 300;
+      line-height: 0.96;
+      letter-spacing: -0.01em;
+      margin-bottom: 22px;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-sub {
+      font-size: 13.5px;
+      line-height: 1.68;
+      color: rgba(237,233,225,0.68);
+      max-width: 460px;
+      margin: 0 auto 36px;
+    }
+    .tag-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      justify-content: center;
+    }
+    .tag {
+      font-family: var(--f-body);
+      font-size: 11.5px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      padding: 6px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      color: var(--text-dim);
+      background: transparent;
+      transition: all 0.18s;
+    }
+    .tag:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(237,233,225,0.3);
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity: 0.3; transform: scaleY(1); }
+      50%      { opacity: 0.8; transform: scaleY(1.15); }
+    }
+
+    /* ────────────────────────────────
+       GALLERY META BAR
+    ──────────────────────────────── */
+    .gallery-meta {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 28px;
+      font-size: 11.5px;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+      border-top: 1px solid var(--border-dim);
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .gallery-meta strong { font-weight: 400; color: var(--text); }
+
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--accent-bg);
+      border: 1px solid rgba(196, 163, 90, 0.18);
+      color: var(--accent);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 9px;
+      border-radius: 100px;
+    }
+
+    /* ────────────────────────────────
+       MASONRY GRID
+    ──────────────────────────────── */
+    .art-grid {
+      columns: 4 260px;
+      column-gap: 3px;
+      padding: 3px;
+    }
+
+    /* ────────────────────────────────
+       ART CARD
+    ──────────────────────────────── */
+    .art-card {
+      break-inside: avoid;
+      margin-bottom: 3px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--surface);
+      display: block;
+    }
+
+    .art-card img {
+      width: 100%;
+      display: block;
+      min-height: 100px;
+      object-fit: cover;
+      transition: transform 0.7s var(--ease);
+    }
+
+    .art-card:hover img { transform: scale(1.055); }
+
+    .art-card-overlay {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 64px 14px 14px;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+      transform: translateY(100%);
+      transition: transform 0.38s var(--ease);
+    }
+
+    .art-card:hover .art-card-overlay { transform: translateY(0); }
+
+    .card-museum {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+
+    .card-title {
+      font-family: var(--f-display);
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+
+    .card-creator {
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* ────────────────────────────────
+       STATES
+    ──────────────────────────────── */
+    .spinner-wrap {
+      display: none;
+      justify-content: center;
+      padding: 64px;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      display: none;
+      padding: 96px 28px;
+      text-align: center;
+    }
+
+    .empty-title {
+      font-family: var(--f-display);
+      font-size: 38px;
+      font-weight: 300;
+      margin-bottom: 10px;
+    }
+
+    .empty-sub { font-size: 13.5px; color: var(--text-dim); }
+
+    /* Load more */
+    .load-more-wrap {
+      display: none;
+      padding: 44px;
+      text-align: center;
+    }
+
+    .btn-load {
+      font-family: var(--f-body);
+      font-size: 10.5px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 12px 32px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-load:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-load:disabled { opacity: 0.3; cursor: default; }
+
+    /* ────────────────────────────────
+       MODAL OVERLAY
+    ──────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s var(--ease-out);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ────────────────────────────────
+       MODAL
+    ──────────────────────────────── */
+    .modal {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      width: 100%;
+      max-width: 1100px;
+      max-height: 90vh;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transform: scale(0.97) translateY(14px);
+      transition: transform 0.35s var(--ease);
+    }
+
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+    /* Image pane */
+    .modal-img-pane {
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      min-height: 320px;
+    }
+
+    #modalImg {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      display: block;
+      transition: opacity 0.2s;
+    }
+
+    /* Nav arrows */
+    .mnav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s, color 0.18s;
+    }
+
+    .mnav:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+    .mnav:disabled { opacity: 0.2; cursor: default; }
+    .mnav.prev { left: 14px; }
+    .mnav.next { right: 14px; }
+
+    /* Info pane */
+    .modal-info {
+      padding: 28px 26px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      border-left: 1px solid var(--border);
+    }
+
+    .modal-close-row {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .modal-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.18s, color 0.18s;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    .modal-museum-name {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.9;
+    }
+
+    .modal-title {
+      font-family: var(--f-display);
+      font-size: 26px;
+      font-weight: 400;
+      line-height: 1.18;
+      margin-top: 6px;
+    }
+
+    .modal-creator {
+      font-size: 14px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border-dim);
+    }
+
+    /* Meta table */
+    .meta-table {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 12px;
+    }
+
+    .meta-label {
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 3px;
+    }
+
+    .meta-val {
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Thumbs */
+    .thumbs-label {
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .thumb-strip {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      cursor: pointer;
+      opacity: 0.45;
+      border: 2px solid transparent;
+      border-radius: 1px;
+      transition: opacity 0.18s, border-color 0.18s;
+    }
+
+    .thumb.active, .thumb:hover { opacity: 1; border-color: var(--accent); }
+
+    /* Description */
+    .modal-desc {
+      font-size: 13px;
+      line-height: 1.72;
+      color: rgba(237, 233, 225, 0.62);
+    }
+
+    .modal-desc p { margin-bottom: 8px; }
+    .modal-desc p:last-child { margin-bottom: 0; }
+
+    /* Museum link */
+    .museum-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--f-body);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 10px 18px;
+      border: 1px solid rgba(196, 163, 90, 0.35);
+      border-radius: 2px;
+      transition: background 0.18s, border-color 0.18s;
+      align-self: flex-start;
+      margin-top: auto;
+    }
+
+    .museum-link:hover { background: var(--accent-bg); border-color: var(--accent); }
+
+    /* ────────────────────────────────
+       FOOTER
+    ──────────────────────────────── */
+    footer {
+      padding: 36px 28px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border-dim);
+      line-height: 1.75;
+      letter-spacing: 0.03em;
+    }
+
+    footer a { color: var(--text-dim); text-decoration: none; transition: color 0.15s; }
+    footer a:hover { color: var(--accent); }
+
+    /* ────────────────────────────────
+       RESPONSIVE
+    ──────────────────────────────── */
+    @media (max-width: 860px) {
+      .modal { grid-template-columns: 1fr; max-height: none; }
+      .modal-img-pane { max-height: 50vh; }
+      .modal-info { border-left: none; border-top: 1px solid var(--border); }
+      .source-pills { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      .header { padding: 0 16px; gap: 12px; }
+      .hero-title { font-size: 46px; }
+      .art-grid { columns: 2 140px; }
+      .modal-overlay { padding: 0; }
+      .modal { max-height: 100vh; border: none; }
+    }
+
+    /* ── SKELETON ── */
+    .skeleton-card {
+      break-inside: avoid;
+      margin-bottom: 3px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .skeleton-img {
+      width: 100%;
+      background: var(--surface-2);
+      position: relative;
+      overflow: hidden;
+    }
+    .skeleton-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+      animation: shimmer 1.6s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ── FAVORITES ── */
+    .card-fav {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(6px);
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+      transform: scale(0.85);
+    }
+    .art-card:hover .card-fav { opacity: 1; transform: scale(1); }
+    .card-fav.saved { opacity: 1; transform: scale(1); color: #e07b7b; border-color: rgba(224, 123, 123, 0.5); }
+    .card-fav:hover { border-color: #e07b7b; color: #e07b7b; }
+    .modal-fav-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.18s, color 0.18s;
+      flex-shrink: 0;
+    }
+    .modal-fav-btn.saved { color: #e07b7b; border-color: rgba(224,123,123,0.5); }
+    .modal-fav-btn:hover { border-color: #e07b7b; color: #e07b7b; }
+
+    /* ── FULLSCREEN ZOOM ── */
+    .img-zoom-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0,0,0,0.97);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+      cursor: zoom-out;
+    }
+    .img-zoom-overlay.open { opacity: 1; pointer-events: all; }
+    .img-zoom-overlay img {
+      max-width: 95vw;
+      max-height: 95vh;
+      object-fit: contain;
+      display: block;
+      box-shadow: 0 32px 96px rgba(0,0,0,0.8);
+    }
+    #modalImg { cursor: zoom-in; }
+
+    /* ── MODAL COUNTER ── */
+    .modal-counter {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.35);
+      pointer-events: none;
+      font-family: var(--f-body);
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <a href="/" class="logo">MASTER<span class="logo-accent">·</span>WORKS</a>
+
+  <form class="search-wrap" id="searchForm" action="javascript:void(0)">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input class="search-input" id="searchInput" type="search"
+           placeholder="Search paintings, artists, periods…"
+           autocomplete="off" spellcheck="false" />
+  </form>
+
+  <nav class="source-pills" id="sourcePills">
+    <button class="pill active" data-source="all">All</button>
+    <button class="pill" data-source="met">Met</button>
+    <button class="pill" data-source="aic">Chicago</button>
+    <button class="pill" data-source="rijks">Rijks</button>
+    <button class="pill" data-source="cma">Cleveland</button>
+    <button class="pill" data-source="mia">Minneapolis</button>
+  </nav>
+  <button class="pill" id="savedPill" data-source="saved" style="margin-left:8px;">Saved ♡</button>
+</header>
+
+<!-- ── Hero ── -->
+<section class="hero" id="heroSection">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Five World-Class Museums · CC0 Public Domain</p>
+    <h1 class="hero-title">The World's<br><em>Great Art</em></h1>
+    <p class="hero-sub">Browse thousands of masterpieces from the Met, Art Institute of Chicago,
+      Rijksmuseum, Cleveland Museum, and Minneapolis Institute of Art.</p>
+    <div class="tag-strip" id="tagStrip">
+      <button class="tag" data-query="impressionism">Impressionism</button>
+      <button class="tag" data-query="Renaissance">Renaissance</button>
+      <button class="tag" data-query="portrait">Portrait</button>
+      <button class="tag" data-query="landscape">Landscape</button>
+      <button class="tag" data-query="still life">Still Life</button>
+      <button class="tag" data-query="mythology">Mythology</button>
+      <button class="tag" data-query="Rembrandt">Rembrandt</button>
+      <button class="tag" data-query="Monet">Monet</button>
+      <button class="tag" data-query="Van Gogh">Van Gogh</button>
+      <button class="tag" data-query="Vermeer">Vermeer</button>
+      <button class="tag" data-query="flowers">Flowers</button>
+      <button class="tag" data-query="gold">Gold</button>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ── Gallery meta bar ── -->
+<div class="gallery-meta" id="galleryMeta">
+  <span id="resultText"></span>
+</div>
+
+<!-- ── Art grid ── -->
+<div id="gridWrap">
+  <div class="art-grid" id="artGrid"></div>
+  <div class="spinner-wrap" id="spinnerWrap">
+    <div class="spinner"></div>
+  </div>
+  <div class="empty-state" id="emptyState">
+    <p class="empty-title">No artworks found</p>
+    <p class="empty-sub">Try a different search term or select another museum.</p>
+  </div>
+  <div class="load-more-wrap" id="loadMoreWrap">
+    <button class="btn-load" id="loadMoreBtn">Load More Works</button>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>All artworks are in the public domain (CC0 &amp; Public Domain Mark).</p>
+  <p>Powered by the <a href="https://hand-me-downs-api.tubas-housing-1c.workers.dev/" target="_blank" rel="noopener">Hand-Me-Downs API</a> ·
+     Metropolitan Museum · Art Institute of Chicago · Rijksmuseum · Cleveland Museum of Art · Minneapolis Institute of Art</p>
+</footer>
+
+<!-- ── Modal ── -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Artwork detail">
+  <div class="modal" id="modal">
+
+    <!-- Image -->
+    <div class="modal-img-pane" id="modalImgPane">
+      <img id="modalImg" src="" alt="" />
+      <button class="mnav prev" id="mPrev" aria-label="Previous artwork">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <button class="mnav next" id="mNext" aria-label="Next artwork">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <div class="modal-counter" id="modalCounter"></div>
+    </div>
+
+    <!-- Info -->
+    <div class="modal-info" id="modalInfo">
+      <div class="modal-close-row" style="gap:8px;">
+        <button class="modal-fav-btn" id="modalFavBtn" aria-label="Save to favorites">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+        <button class="modal-close" id="modalClose" aria-label="Close">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div>
+        <p class="modal-museum-name" id="mMuseum"></p>
+        <h2 class="modal-title" id="mTitle"></h2>
+        <p class="modal-creator" id="mCreator"></p>
+      </div>
+
+      <hr class="divider" />
+      <div class="meta-table" id="mMeta"></div>
+
+      <div id="mThumbsSection" style="display:none">
+        <p class="thumbs-label">More Images</p>
+        <div class="thumb-strip" id="mThumbs"></div>
+      </div>
+
+      <div class="modal-desc" id="mDesc" style="display:none"></div>
+
+      <a class="museum-link" id="mLink" href="#" target="_blank" rel="noopener">
+        View at Museum
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="img-zoom-overlay" id="imgZoomOverlay">
+  <img id="imgZoomImg" src="" alt="" />
+</div>
+
+<script>
+'use strict';
+
+/* ── Config ── */
+const API   = 'https://hand-me-downs-api.tubas-housing-1c.workers.dev';
+const LIMIT = 24;
+const MUSEUMS = {
+  met:   'The Metropolitan Museum of Art',
+  aic:   'Art Institute of Chicago',
+  rijks: 'Rijksmuseum',
+  cma:   'Cleveland Museum of Art',
+  mia:   'Minneapolis Institute of Art',
+};
+const SEED_QUERIES = [
+  'impressionism', 'landscape', 'portrait', 'mythology', 'gold', 'flowers'
+];
+
+/* ── State ── */
+const s = {
+  query:       SEED_QUERIES[Math.floor(Math.random() * SEED_QUERIES.length)],
+  source:      'all',
+  offset:      0,
+  works:       [],
+  total:       0,
+  loading:     false,
+  hasMore:     true,
+  selIdx:      -1,
+  failedCount: 0,
+  gen:         0,
+};
+
+/* ── DOM ── */
+const $ = id => document.getElementById(id);
+const searchInput  = $('searchInput');
+
+/* ── URL hash state ── */
+function pushHash() {
+  const parts = [];
+  if (s.query) parts.push('q=' + encodeURIComponent(s.query));
+  if (s.source && s.source !== 'all') parts.push('source=' + encodeURIComponent(s.source));
+  history.replaceState(null, '', parts.length ? '#' + parts.join('&') : location.pathname);
+}
+function readHash() {
+  const hash = location.hash.slice(1);
+  if (!hash) return;
+  const params = Object.fromEntries(hash.split('&').map(p => p.split('=').map(decodeURIComponent)));
+  if (params.q) { s.query = params.q; searchInput.value = params.q; }
+  if (params.source) {
+    s.source = params.source;
+    document.querySelectorAll('.pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.source === params.source);
+    });
+    const savedPill = document.getElementById('savedPill');
+    if (savedPill) savedPill.classList.toggle('active', params.source === 'saved');
+  }
+}
+const artGrid      = $('artGrid');
+const spinnerWrap  = $('spinnerWrap');
+const emptyState   = $('emptyState');
+const loadMoreWrap = $('loadMoreWrap');
+const loadMoreBtn  = $('loadMoreBtn');
+const galleryMeta  = $('galleryMeta');
+const resultText   = $('resultText');
+const modalOverlay = $('modalOverlay');
+const mImg         = $('modalImg');
+const mMuseum      = $('mMuseum');
+const mTitle       = $('mTitle');
+const mCreator     = $('mCreator');
+const mMeta        = $('mMeta');
+const mThumbsSec   = $('mThumbsSection');
+const mThumbs      = $('mThumbs');
+const mDesc        = $('mDesc');
+const mLink        = $('mLink');
+
+/* ── Favorites ── */
+const FAV_KEY = 'hmd_favorites';
+function loadFavs() {
+  try { return JSON.parse(localStorage.getItem(FAV_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveFavs(favs) {
+  localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+}
+function isFav(uid) { return !!loadFavs()[uid]; }
+function toggleFav(art) {
+  const favs = loadFavs();
+  if (favs[art.uid]) { delete favs[art.uid]; }
+  else { favs[art.uid] = art; }
+  saveFavs(favs);
+  return !!favs[art.uid];
+}
+function updateFavUI(uid, saved) {
+  document.querySelectorAll(`.card-fav[data-uid="${CSS.escape(uid)}"]`).forEach(btn => {
+    btn.classList.toggle('saved', saved);
+    btn.title = saved ? 'Remove from saved' : 'Save artwork';
+  });
+  const modalFavBtn = document.getElementById('modalFavBtn');
+  if (modalFavBtn && modalFavBtn.dataset.uid === uid) {
+    modalFavBtn.classList.toggle('saved', saved);
+  }
+}
+
+/* ── Helpers ── */
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function sanitizeDesc(html) {
+  // Strip script/style tags and event attributes for safety
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/\s+on\w+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\s+on\w+\s*=\s*'[^']*'/gi, '');
+}
+
+/* ── Card observer ── */
+const cardObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+      cardObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+function showSkeletons() {
+  artGrid.innerHTML = '';
+  const heights = [220,300,180,260,340,200,280,240,310,190,260,330];
+  const frag = document.createDocumentFragment();
+  heights.forEach(h => {
+    const card = document.createElement('div');
+    card.className = 'skeleton-card';
+    const img = document.createElement('div');
+    img.className = 'skeleton-img';
+    img.style.height = h + 'px';
+    card.appendChild(img);
+    frag.appendChild(card);
+  });
+  artGrid.appendChild(frag);
+}
+
+/* ── Fetch ── */
+let autoScrollCooldown = false;
+
+async function load(reset = false) {
+  if (s.loading) return;
+  if (!reset && !s.hasMore) return;
+
+  s.loading = true;
+  autoScrollCooldown = true;
+
+  if (reset) {
+    s.offset      = 0;
+    s.works       = [];
+    s.hasMore     = true;
+    s.failedCount = 0;
+    s.gen++;
+    artGrid.innerHTML = '';
+    showSkeletons();
+    emptyState.style.display = 'none';
+    loadMoreWrap.style.display = 'none';
+    galleryMeta.style.display = 'none';
+  }
+
+  spinnerWrap.style.display = reset ? 'none' : 'flex';
+  loadMoreBtn.disabled = true;
+
+  try {
+    const url = s.source === 'all'
+      ? `${API}/api/all/search?q=${encodeURIComponent(s.query)}&limit=${LIMIT}&offset=${s.offset}`
+      : `${API}/api/${s.source}/search?q=${encodeURIComponent(s.query)}&limit=${LIMIT}&offset=${s.offset}`;
+
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    const fresh = (data.records ?? []).filter(r => r.image_url);
+    s.total     = data.total ?? 0;
+    s.offset   += LIMIT;
+    s.works     = reset ? fresh : [...s.works, ...fresh];
+    s.hasMore   = fresh.length >= LIMIT;
+
+    paint(fresh, !reset);
+    refreshMeta();
+    pushHash();
+
+    if (fresh.length === 0 && s.works.length === 0) {
+      emptyState.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('[load]', err);
+  } finally {
+    s.loading = false;
+    spinnerWrap.style.display = 'none';
+    loadMoreBtn.disabled = false;
+    loadMoreWrap.style.display = s.hasMore ? 'block' : 'none';
+    setTimeout(() => { autoScrollCooldown = false; }, 600);
+  }
+}
+
+function refreshMeta() {
+  if (!s.works.length) return;
+  galleryMeta.style.display = 'flex';
+  const badge = s.source !== 'all'
+    ? `<span class="source-badge">${esc(MUSEUMS[s.source] || s.source)}</span>`
+    : '';
+  const shown = Math.max(0, s.works.length - s.failedCount);
+  resultText.innerHTML =
+    `Showing <strong>${shown}</strong> of <strong>${s.total}</strong>` +
+    ` results for <strong>"${esc(s.query)}"</strong> ${badge}`;
+}
+
+/* ── Render cards ── */
+function paint(records, append) {
+  if (!append) artGrid.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  const base = append ? s.works.length - records.length : 0;
+
+  records.forEach((art, i) => {
+    const card = document.createElement('div');
+    card.className = 'art-card';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(12px)';
+    card.style.transition = 'opacity 0.5s var(--ease), transform 0.5s var(--ease)';
+
+    const img = document.createElement('img');
+    img.src     = art.image_thumb || art.image_url;
+    img.alt     = art.title || 'Untitled';
+    img.loading = 'lazy';
+    const gen = s.gen;
+    img.onerror = () => { if (s.gen !== gen) return; s.failedCount++; card.remove(); refreshMeta(); };
+
+    const overlay = document.createElement('div');
+    overlay.className = 'art-card-overlay';
+    overlay.innerHTML =
+      `<p class="card-museum">${esc(MUSEUMS[art.source] || art.source)}</p>` +
+      `<p class="card-title">${esc(art.title || 'Untitled')}</p>` +
+      (art.creator ? `<p class="card-creator">${esc(art.creator)}</p>` : '');
+
+    card.appendChild(img);
+    card.appendChild(overlay);
+
+    const favBtn = document.createElement('button');
+    favBtn.className = 'card-fav' + (isFav(art.uid) ? ' saved' : '');
+    favBtn.dataset.uid = art.uid;
+    favBtn.title = isFav(art.uid) ? 'Remove from saved' : 'Save artwork';
+    favBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+    favBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const saved = toggleFav(art);
+      updateFavUI(art.uid, saved);
+      if (s.source === 'saved') loadSaved();
+    });
+    card.appendChild(favBtn);
+    cardObserver.observe(card);
+
+    const idx = base + i;
+    card.addEventListener('click', () => openModal(idx));
+    frag.appendChild(card);
+  });
+
+  artGrid.appendChild(frag);
+}
+
+/* ── Saved / Favorites view ── */
+function loadSaved() {
+  const favs = loadFavs();
+  const records = Object.values(favs);
+  s.works = records;
+  s.total = records.length;
+  s.hasMore = false;
+  s.offset = records.length;
+  artGrid.innerHTML = '';
+  emptyState.style.display = 'none';
+  if (records.length === 0) {
+    emptyState.style.display = 'block';
+    emptyState.querySelector('.empty-title').textContent = 'No saved artworks';
+    emptyState.querySelector('.empty-sub').textContent = 'Click the heart on any artwork to save it here.';
+  } else {
+    paint(records, false);
+    galleryMeta.style.display = 'flex';
+    resultText.innerHTML = `<strong>${records.length}</strong> saved artwork${records.length !== 1 ? 's' : ''}`;
+  }
+  loadMoreWrap.style.display = 'none';
+}
+
+/* ── Modal ── */
+function openModal(idx) {
+  s.selIdx = idx;
+  fillModal(s.works[idx]);
+  modalOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  syncNavBtns();
+}
+
+function closeModal() {
+  modalOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => { mImg.src = ''; }, 300);
+}
+
+function step(dir) {
+  const next = s.selIdx + dir;
+  if (next < 0 || next >= s.works.length) return;
+  s.selIdx = next;
+  fillModal(s.works[next]);
+  syncNavBtns();
+  if (next >= s.works.length - 4 && s.hasMore) load();
+}
+
+function syncNavBtns() {
+  $('mPrev').disabled = s.selIdx <= 0;
+  $('mNext').disabled = s.selIdx >= s.works.length - 1 && !s.hasMore;
+  const counter = document.getElementById('modalCounter');
+  if (counter) counter.textContent = `${s.selIdx + 1} / ${s.works.length}`;
+}
+
+function switchImage(url, thumb) {
+  mImg.style.opacity = '0';
+  setTimeout(() => {
+    mImg.src = url;
+    mImg.style.opacity = '1';
+  }, 150);
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function fillModal(art) {
+  // Image
+  mImg.style.opacity = '1';
+  mImg.src = art.image_url || art.image_thumb;
+  mImg.alt = art.title || 'Untitled';
+
+  // Header
+  mMuseum.textContent  = (MUSEUMS[art.source] || art.source).toUpperCase();
+  mTitle.textContent   = art.title || 'Untitled';
+  mCreator.textContent = art.creator || '';
+
+  // Meta
+  const pairs = [
+    ['Date',           art.date_display],
+    ['Medium',         art.medium],
+    ['Department',     art.department],
+    ['Classification', art.classification],
+    ['Dimensions',     art.dimensions],
+    ['Culture',        art.culture],
+    ['Credit',         art.credit_line],
+    ['Rights',         art.rights],
+  ].filter(([, v]) => v && v.trim());
+
+  mMeta.innerHTML = pairs.map(([l, v]) =>
+    `<div><p class="meta-label">${esc(l)}</p><p class="meta-val">${esc(v)}</p></div>`
+  ).join('');
+
+  // Thumbnails
+  const extras = art.additional_images ?? [];
+  if (extras.length > 0) {
+    mThumbsSec.style.display = 'block';
+    const allImgs = [art.image_url, ...extras];
+    mThumbs.innerHTML = '';
+    allImgs.forEach((url, i) => {
+      if (!url || !/^https?:\/\//i.test(url)) return;
+      const th = document.createElement('img');
+      th.className = 'thumb' + (i === 0 ? ' active' : '');
+      th.src = url;
+      th.alt = 'View ' + (i + 1);
+      th.loading = 'lazy';
+      th.addEventListener('click', () => switchImage(th.src, th));
+      mThumbs.appendChild(th);
+    });
+  } else {
+    mThumbsSec.style.display = 'none';
+  }
+
+  // Description
+  if (art.description && art.description.trim()) {
+    mDesc.style.display = 'block';
+    mDesc.textContent = '';
+    // Render description as plain text paragraphs, split on double newlines
+    art.description.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<[^>]+>/g, '').split(/\n{2,}|\n/).filter(Boolean).forEach(para => {
+      const p = document.createElement('p');
+      p.textContent = para.trim();
+      mDesc.appendChild(p);
+    });
+  } else {
+    mDesc.style.display = 'none';
+  }
+
+  // Link
+  if (art.object_url && /^https?:\/\//i.test(art.object_url)) {
+    mLink.href = art.object_url;
+    mLink.style.display = 'inline-flex';
+  } else {
+    mLink.style.display = 'none';
+  }
+
+  // Reset scroll
+  $('modalInfo').scrollTop = 0;
+
+  const modalFavBtn = document.getElementById('modalFavBtn');
+  if (modalFavBtn) {
+    modalFavBtn.dataset.uid = art.uid;
+    modalFavBtn.classList.toggle('saved', isFav(art.uid));
+    modalFavBtn.onclick = () => {
+      const saved = toggleFav(art);
+      updateFavUI(art.uid, saved);
+      modalFavBtn.classList.toggle('saved', saved);
+      if (s.source === 'saved') {
+        // Remove from grid immediately if we just un-saved it
+        if (!saved) {
+          s.works = s.works.filter(w => w.uid !== art.uid);
+          document.querySelectorAll(`.card-fav[data-uid="${CSS.escape(art.uid)}"]`).forEach(btn => btn.closest('.art-card')?.remove());
+          resultText.innerHTML = `<strong>${s.works.length}</strong> saved artwork${s.works.length !== 1 ? 's' : ''}`;
+          if (s.works.length === 0) {
+            galleryMeta.style.display = 'none';
+            emptyState.style.display = 'block';
+            const titleEl = emptyState.querySelector('.empty-title');
+            const subEl = emptyState.querySelector('.empty-sub');
+            if (titleEl) titleEl.textContent = 'No saved artworks';
+            if (subEl) subEl.textContent = 'Click the heart on any artwork to save it here.';
+          }
+        }
+      }
+    };
+  }
+}
+
+/* ── Search ── */
+let debounceTimer;
+searchInput.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const q = searchInput.value.trim();
+    if (!q) return;
+    s.query = q;
+    pushHash();
+    load(true);
+    galleryMeta.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 380);
+});
+
+$('searchForm').addEventListener('submit', () => {
+  clearTimeout(debounceTimer);
+  const q = searchInput.value.trim();
+  if (!q) return;
+  s.query = q;
+  pushHash();
+  load(true);
+  galleryMeta.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+/* ── Source pills ── */
+$('sourcePills').addEventListener('click', e => {
+  const pill = e.target.closest('.pill');
+  if (!pill) return;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  s.source = pill.dataset.source;
+  if (s.query) load(true);
+});
+
+/* ── Saved pill ── */
+const savedPill = document.getElementById('savedPill');
+if (savedPill) {
+  savedPill.addEventListener('click', () => {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    savedPill.classList.add('active');
+    s.source = 'saved';
+    loadSaved();
+    pushHash();
+  });
+}
+
+/* ── Tag strip ── */
+$('tagStrip').addEventListener('click', e => {
+  const tag = e.target.closest('.tag');
+  if (!tag) return;
+  const q = tag.dataset.query;
+  searchInput.value = q;
+  s.query = q;
+  load(true);
+  galleryMeta.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+/* ── Load more ── */
+loadMoreBtn.addEventListener('click', () => load());
+
+const scrollObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !s.loading && s.hasMore && !autoScrollCooldown) load();
+}, { rootMargin: '200px' });
+scrollObserver.observe(loadMoreWrap);
+
+/* ── Modal controls ── */
+$('modalClose').addEventListener('click', closeModal);
+$('mPrev').addEventListener('click', () => step(-1));
+$('mNext').addEventListener('click', () => step(1));
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+/* ── Fullscreen image zoom ── */
+const imgZoomOverlay = document.getElementById('imgZoomOverlay');
+const imgZoomImg = document.getElementById('imgZoomImg');
+document.getElementById('modalImg').addEventListener('click', () => {
+  const src = document.getElementById('modalImg').src;
+  if (!src) return;
+  imgZoomImg.src = src;
+  imgZoomOverlay.classList.add('open');
+});
+imgZoomOverlay.addEventListener('click', () => {
+  imgZoomOverlay.classList.remove('open');
+  imgZoomImg.src = '';
+});
+
+/* ── Keyboard ── */
+document.addEventListener('keydown', e => {
+  if (imgZoomOverlay.classList.contains('open')) {
+    if (e.key === 'Escape') { imgZoomOverlay.classList.remove('open'); imgZoomImg.src = ''; }
+    return;
+  }
+  if (!modalOverlay.classList.contains('open')) return;
+  if (e.key === 'Escape')      closeModal();
+  if (e.key === 'ArrowLeft')   step(-1);
+  if (e.key === 'ArrowRight')  step(1);
+});
+
+/* ── Init ── */
+readHash();
+if (s.source === 'saved') {
+  loadSaved();
+} else {
+  load(true);
+}
+
+/* ── Hero bg cycling ── */
+(async function heroInit() {
+  const heroBg = document.getElementById('heroBg');
+  if (!heroBg) return;
+  const queries = ['impressionism', 'landscape', 'flowers', 'gold', 'Rembrandt', 'mythology'];
+  const q = queries[Math.floor(Math.random() * queries.length)];
+  let pool = [];
+  try {
+    const res = await fetch(`${API}/api/all/search?q=${encodeURIComponent(q)}&limit=20`);
+    const data = await res.json();
+    pool = (data.records || []).filter(r => r.image_url);
+  } catch(e) { /* silent fail */ }
+  if (!pool.length) return;
+
+  let idx = Math.floor(Math.random() * pool.length);
+  function setHeroBg(url) {
+    if (!url || !/^https?:\/\//i.test(url)) return;
+    heroBg.style.backgroundImage = `url(${JSON.stringify(url)})`;
+  }
+  function cycleHero() {
+    heroBg.classList.add('fade-out');
+    setTimeout(() => {
+      idx = (idx + 1) % pool.length;
+      setHeroBg(pool[idx].image_url);
+      heroBg.classList.remove('fade-out');
+    }, 1600);
+  }
+  setHeroBg(pool[idx].image_url);
+  setInterval(cycleHero, 8000);
+})();
+</script>
+</body>
+</html>

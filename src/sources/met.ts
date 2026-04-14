@@ -44,10 +44,29 @@ interface MetObject {
 
 // --- Extract & Adapt ---
 
+// Applied arts / functional objects that are rarely what users are looking for
+const BLOCKED_CLASSIFICATIONS = new Set([
+  "Arms and Armor",
+  "Metalwork",
+  "Woodwork",
+  "Furniture",
+  "Clocks and Watches",
+  "Musical Instruments",
+  "Textiles",
+  "Ceramics",
+  "Glass",
+  "Enamels",
+  "Ivories",
+  "Leather",
+  "Lacquerware",
+  "Netsuke",
+]);
+
 function adapt(obj: MetObject): UnifiedRecord | null {
   if (!obj.isPublicDomain) return null;
   const primary = obj.primaryImage || "";
   if (!primary) return null;
+  if (obj.classification && BLOCKED_CLASSIFICATIONS.has(obj.classification)) return null;
 
   const additional = obj.additionalImages || [];
   const allImages = [primary, ...additional];
@@ -131,7 +150,7 @@ export async function departmentRecords(name: string, limit: number): Promise<Un
     params: { departmentIds: dept.id as number },
   });
   const ids = data?.objectIDs || [];
-  return fetchByIds(ids.slice(0, Math.min(ids.length, limit * 5)));
+  return fetchByIds(ids.slice(0, Math.min(ids.length, limit * 5)), limit);
 }
 
 export async function idRecords(ids: string[]): Promise<UnifiedRecord[]> {
@@ -140,7 +159,7 @@ export async function idRecords(ids: string[]): Promise<UnifiedRecord[]> {
 
 // --- Internal ---
 
-async function fetchByIds(ids: number[]): Promise<UnifiedRecord[]> {
+async function fetchByIds(ids: number[], limit?: number): Promise<UnifiedRecord[]> {
   const records: UnifiedRecord[] = [];
   // Fetch in parallel batches of 10 to respect rate limits
   const batchSize = 10;
@@ -153,6 +172,10 @@ async function fetchByIds(ids: number[]): Promise<UnifiedRecord[]> {
       if (!obj) continue;
       const rec = adapt(obj);
       if (rec) records.push(rec);
+    }
+    // Stop early once we have enough results to preserve relevance ordering
+    if (limit && records.length >= limit) {
+      return records.slice(0, limit);
     }
   }
   return records;

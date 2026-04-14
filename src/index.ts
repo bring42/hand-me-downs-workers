@@ -46,23 +46,6 @@ async function getCachedDepartments(
   return depts;
 }
 
-// --- Health check ---
-
-app.get("/", (c) =>
-  c.json({
-    name: "hand-me-downs",
-    description: "CC0 public-domain artwork metadata API",
-    sources: sourceNames,
-    endpoints: [
-      "GET /api/:source/search?q=<query>&limit=<n>&offset=<n>",
-      "GET /api/:source/departments",
-      "GET /api/:source/department/:name?limit=<n>&offset=<n>",
-      "GET /api/:source/ids?ids=<comma-separated>",
-      "GET /api/all/search?q=<query>&limit=<n>&offset=<n>",
-    ],
-  })
-);
-
 // --- Fan-out: search all sources ---
 
 app.get("/api/all/search", async (c) => {
